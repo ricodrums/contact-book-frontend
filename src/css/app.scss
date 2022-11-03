@@ -1,1 +1,28 @@
 // app global css in SCSS form
+a {
+    text-decoration: none;
+}
+
+.background {
+    background-image: url('../assets/img/background.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.container {
+    width: 1440px;
+    height: 95vh;
+    max-width: 95%;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid $info;
+    backdrop-filter: blur(15px);
+}
