@@ -1,6 +1,8 @@
 // app global css in SCSS form
 a {
+    font-weight: bold;
     text-decoration: none;
+    color: $secondary;
 }
 
 .background {
@@ -25,4 +27,8 @@ a {
     border-radius: 10px;
     border: 1px solid $info;
     backdrop-filter: blur(15px);
+}
+
+.text-muted {
+    color: $muted;
 }
