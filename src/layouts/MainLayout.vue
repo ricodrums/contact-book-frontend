@@ -2,7 +2,7 @@
   <q-layout view="hHh lpR fFf" class="background main-layout">
     
     <q-page-container class="container">
-      <navigation-bar />
+      <navigation-bar is-public/>
       <router-view />
     </q-page-container>
 
