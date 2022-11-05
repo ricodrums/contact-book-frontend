@@ -1,5 +1,9 @@
 # Frontend for Contact Book
 
+## [0.0.5] GUI for searh feature `05-11-2022`
+
+* Added search on float menu at bottom right of the page
+
 ## [0.0.4] GUI for home page `05-11-2022`
 
 * Added HomePage to show user contacts list

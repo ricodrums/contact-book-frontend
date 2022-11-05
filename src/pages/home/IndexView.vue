@@ -73,13 +73,45 @@
       </q-card>
       </q-expansion-item>
     </q-list>
+    <q-page-sticky
+      position="bottom-right"
+      :offset="[18, 18]">
+        <q-fab
+        color="indigo-3"
+        icon="search"
+        direction="left"
+        size="20px"
+        @click="toggleSearch()"
+        >
+        <q-menu
+        v-model="isSearchVisible"
+        class="q-px-lg q-py-xd"
+        anchor="center left"
+        self="center right"
+        style="width: 50rem; max-width: 70%;"
+        persistent
+        >
+          <q-input
+            v-model="searchText"
+            label="Type to search something"
+          />
+        </q-menu>
+      </q-fab>    
+    </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 
-let contacts = ref<any>([])
+let contacts = ref<any>([]);
+let searchText = ref(null);
+let isSearchVisible = ref(false);
+
+const toggleSearch = () => {
+  isSearchVisible.value = !isSearchVisible.value;
+  searchText.value = null;
+}
 
 onMounted(() => {
   let limit = Math.ceil(Math.random() * 100);
