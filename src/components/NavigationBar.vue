@@ -63,7 +63,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, ref } from 'vue'
+import { ref } from 'vue'
 userLanguage: ref('english')
 defineProps<{
   isPublic: boolean,

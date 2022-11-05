@@ -2,7 +2,7 @@
   <q-layout view="hHh lpR fFf" class="background main-layout">
     
     <q-page-container class="container">
-      <navigation-bar is-public/>
+      <navigation-bar :is-public="true"/>
       <router-view />
     </q-page-container>
 
