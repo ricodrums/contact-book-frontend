@@ -1,5 +1,14 @@
 # Frontend for Contact Book
 
+## [0.0.6] Logic for Authentication and Registration `06-11-2022`
+
+* Implemented use of local storage with Pinia
+* Implemented Router Guard for non public views
+* Now the users can logout from their account
+* Updated loading model
+* Now users can login with their username and password, the need to be registered first
+* Now users can register with their username and a generated email
+
 ## [0.0.5] GUI for searh feature `05-11-2022`
 
 * Added search on float menu at bottom right of the page
