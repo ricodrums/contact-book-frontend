@@ -1,10 +1,9 @@
-import { Loading, QSpinnerRings } from 'quasar';
+import { Loading, QSpinnerGrid } from 'quasar';
 
 export const showLoading = (message = '') => {
     Loading.show({
-        spinner: QSpinnerRings,
-        spinnerColor: 'primary',
-        spinnerSize: 500,
+        spinner: QSpinnerGrid,
+        spinnerColor: 'indigo-4',
         message
     });
 }

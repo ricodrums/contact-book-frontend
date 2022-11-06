@@ -10,5 +10,5 @@
 </template>
 <script lang="ts" setup>
 import NavigationBar from '../components/NavigationBar.vue';
-components: { NavigationBar }
+
 </script>

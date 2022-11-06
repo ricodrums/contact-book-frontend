@@ -2,28 +2,28 @@
   <!-- Header -->
   <q-header class="bg-indigo-2 text-dark" elevated>
     <q-toolbar class="q-px-none">
-      <q-btn class="text-h6" :to="{name: isPublic ? 'index' : 'homeIndex'}" label="Contact Book" flat no-caps/>
+      <q-btn class="text-h6" :to="{name: isPublic ? ROUTER.INDEX : ROUTER.HOME}" label="Contact Book" flat no-caps/>
       <q-space />
 
       <!-- Public section -->
       <div v-if="isPublic">
-        <q-btn class="text-subtitle1 desktop-only" :to="{name: 'login'}" label="Login" flat no-caps/>
-        <q-btn class="text-subtitle1 desktop-only" :to="{name: 'register'}" label="Sign Up" flat no-caps/>
-        <q-btn class="text-subtitle1 desktop-only" :to="{name: 'about'}" label="About Us" flat no-caps/>
+        <q-btn class="text-subtitle1 desktop-only" :to="{name: ROUTER.LOGIN}" label="Login" flat no-caps/>
+        <q-btn class="text-subtitle1 desktop-only" :to="{name: ROUTER.REGISTER}" label="Sign Up" flat no-caps/>
+        <q-btn class="text-subtitle1 desktop-only" :to="{name: ROUTER.ABOUT}" label="About Us" flat no-caps/>
         <q-btn class="mobile-only" stretch flat no-caps icon="menu">
           <q-menu>
             <q-list style="min-width: 100px">
-              <router-link :to="{name: 'login'}">
+              <router-link :to="{name: ROUTER.LOGIN}">
                 <q-item clickable v-close-popup>
                   <q-item-section class="text-black">Login</q-item-section>
                 </q-item>
               </router-link>
-              <router-link :to="{name: 'register'}">
+              <router-link :to="{name: ROUTER.REGISTER}">
                 <q-item clickable v-close-popup>
                   <q-item-section class="text-black">Sign Up</q-item-section>
                 </q-item>
               </router-link>
-              <router-link :to="{name: 'about'}">
+              <router-link :to="{name: ROUTER.ABOUT}">
                 <q-item clickable v-close-popup>
                   <q-item-section class="text-black">About Us</q-item-section>
                 </q-item>
@@ -52,6 +52,7 @@
                 label="Logout"
                 push
                 v-close-popup
+                @click="logoutButton()"
               />
             </div>
           </div>
@@ -63,9 +64,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-userLanguage: ref('english')
-defineProps<{
-  isPublic: boolean,
-}>()
+import { ref } from 'vue';
+
+import { ROUTER } from 'src/constants';
+import { logout } from 'src/services/auth.service'
+import { hideLoading, showLoading } from 'src/utils/loading';
+import { useRouter } from 'vue-router';
+
+let userLanguage = ref<string>('english')
+defineProps<{ isPublic: boolean, }>()
+
+const router$ = useRouter();
+
+const logoutButton = async () => {
+  showLoading();
+  await logout();
+  router$.push({name: ROUTER.INDEX});
+  hideLoading();
+}
+
 </script>

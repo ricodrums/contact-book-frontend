@@ -32,7 +32,7 @@
         </div>
       </q-form>
       <div class="row justify-evenly q-mt-xl">
-        <span class="text-muted">If you do not have an account <router-link :to="{name: 'register'}">register here!</router-link></span>
+        <span class="text-muted">If you do not have an account <router-link :to="{name: ROUTER.REGISTER}">register here!</router-link></span>
       </div>
 
     </div>
@@ -41,19 +41,34 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useRouter } from "vue-router"
+
+import { login } from 'src/services/auth.service';
+
 import { required } from 'src/utils/validators';
+import { showNotify } from 'src/utils/notify';
+import { ROUTER } from 'src/constants';
 
 
-let username = ref(null);
-let password = ref(null);
+let username = ref<string>('');
+let password = ref<string>('');
 
-const onSubmit = () => {
-  // TODO!
-  console.log('Implement login endpoint and logic around')
-}
+const router$ = useRouter();
+
+const onSubmit = async () => {
+  let message: string;
+  try {
+    message = await login({ username: username.value, password: password.value }) ?? '';
+    showNotify(`Welcome ${username.value} !`, 'positive');
+    router$.push({ name: ROUTER.HOME });
+  } catch(error) {
+    message = error as string;
+    showNotify(message, 'negative');
+  }
+};
 
 const onReset = () => {
-  username.value = null;
-  password.value = null;
-}
+  username.value = '';
+  password.value = '';
+};
 </script>
