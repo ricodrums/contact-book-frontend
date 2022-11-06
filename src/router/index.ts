@@ -1,4 +1,7 @@
 import { route } from 'quasar/wrappers';
+import { KEYS_STORAGE, ROUTER } from 'src/constants';
+import { useAuthStore } from 'src/stores/auth.store';
+import { hideLoading, showLoading } from 'src/utils/loading';
 import {
   createMemoryHistory,
   createRouter,
@@ -18,11 +21,14 @@ import routes from './routes';
  */
 
 export default route(function (/* { store, ssrContext } */) {
+
+  const authStore = useAuthStore();
+
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
 
-  const Router = createRouter({
+  const router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
 
@@ -32,5 +38,21 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  return Router;
+  router.beforeEach(async (to, from) => {
+    showLoading();
+    if (
+      // make sure the user is authenticated
+      !localStorage.getItem(KEYS_STORAGE.AUTHORIZATION) &&
+      // Avoid infinite redirection
+      to.name !== ROUTER.LOGIN &&
+      // Allow public pages
+      !to.meta.isPublic
+    ) {
+      hideLoading();
+      // redirect the user to the login page
+      return { name: ROUTER.LOGIN }
+    }
+    hideLoading();
+  })
+  return router;
 });
