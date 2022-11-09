@@ -9,10 +9,10 @@
       >
         <q-input
           v-model="username"
-          label="Your username or email *"
+          label="Your username *"
           lazy-rules
           :rules="[ 
-            val => required(val) || 'Please at least type your username'
+            val => required(val) || 'Please type your username',
           ]"
         />
 
@@ -23,6 +23,7 @@
           lazy-rules
           :rules="[
             val => required(val) || 'Please type your password',
+            val => isValidPassword(val) || 'Password is too easy, use mayus, minus, number and special characters'
           ]"
         />
 
@@ -33,7 +34,7 @@
           lazy-rules
           :rules="[
             val => required(val) || 'Please type your password',
-            val => isEqual(val) || 'Passwords do not match',
+            val => isEqual(val, password) || 'Passwords do not match',
           ]"
         />
 
@@ -43,7 +44,7 @@
         </div>
       </q-form>
       <div class="row justify-evenly q-mt-xl">
-        <span class="text-muted">If you have an account <router-link :to="{name: 'login'}">login here!</router-link></span>
+        <span class="text-muted">If you have an account <router-link :to="{name: ROUTER.LOGIN}">login here!</router-link></span>
       </div>
 
     </div>
@@ -52,21 +53,43 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { required, isEqual } from 'src/utils/validators';
+import { useRouter } from 'vue-router';
+import { register } from 'src/services/auth.service';
+import { generateEmail } from 'src/utils/functions';
 
 
-let username = ref(null);
-let password = ref(null);
-let confirmPassword = ref(null);
+import { required, isEqual, isValidPassword } from 'src/utils/validators';
+import { showNotify } from 'src/utils/notify'
+import { ROUTER } from 'src/constants';
 
-const onSubmit = () => {
-  // TODO!
-  console.log('Implement register endpoint and logic around')
+const router$ = useRouter();
+
+let username = ref<string>('');
+let password = ref<string>('');
+let confirmPassword = ref<string>('');
+
+const onSubmit = async () => {
+  let message: string;
+  try {
+    message = await register({
+        email: generateEmail(username.value),
+        username: username.value,
+        password: password.value,
+        confirmPassword: confirmPassword.value
+      }) ?? '';
+    showNotify('Success!', 'positive');
+    router$.push({ name: ROUTER.HOME });
+  
+  } catch (error) {
+    message = error as string ?? '';
+    showNotify(message, 'negative');
+  }
 }
 
 const onReset = () => {
-  username.value = null;
-  password.value = null;
-  confirmPassword.value = null;
+  username.value = '';
+  password.value = '';
+  confirmPassword.value = '';
 }
+
 </script>

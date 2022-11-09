@@ -1,0 +1,2 @@
+export const generateUsername = (val: string) => `${val.slice(0, val.indexOf('@'))}-${Math.floor(Math.random()*10000)}-${Math.floor(Math.random()*10000)}-${Math.floor(Math.random()*10000)}-${Math.floor(Math.random()*10000)}`
+export const generateEmail = (val: string) => `${val}-${Math.floor(Math.random()*10000)}-${Math.floor(Math.random()*10000)}-${Math.floor(Math.random()*10000)}-${Math.floor(Math.random()*10000)}@contact-book.com`

@@ -2,10 +2,23 @@
   <router-view />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-export default defineComponent({
-  name: 'App'
+import { useAuthStore } from 'src/stores/auth.store';
+import { KEYS_STORAGE, ROUTER } from 'src/constants';
+import { IAuthResponse } from 'src/interfaces/auth.interface';
+
+const router$ = useRouter();
+const authStore = useAuthStore();
+
+onMounted(() => {
+  if(localStorage.getItem(KEYS_STORAGE.AUTHORIZATION)) {
+    const dataAuth = JSON.parse(localStorage.getItem(KEYS_STORAGE.AUTHORIZATION) as string) as IAuthResponse;
+    authStore.setAuth(dataAuth.accessToken, dataAuth.typeToken, dataAuth.refreshToken);
+    router$.push({ name: ROUTER.HOME });
+  }
 });
+
 </script>

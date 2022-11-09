@@ -6,20 +6,12 @@
       <p class="text-center text-bold">Your phone</p>
     </article>
     <article>
-      <q-btn :to="{name: 'login'}" color="primary" label="Get Started" no-caps flat icon-right="trending_flat"></q-btn>
+      <q-btn :to="{name: ROUTER.LOGIN}" color="primary" label="Get Started" no-caps flat icon-right="trending_flat"></q-btn>
     </article>
   </q-page>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { ROUTER } from '../../constants';
 
-export default defineComponent({
-  name: 'IndexPage',
-  components: {  },
-  setup () {
-    
-    return { };
-  }
-});
 </script>
