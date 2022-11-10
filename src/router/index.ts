@@ -42,7 +42,7 @@ export default route(function (/* { store, ssrContext } */) {
     showLoading();
     if (
       // make sure the user is authenticated
-      !localStorage.getItem(KEYS_STORAGE.AUTHORIZATION) &&
+      !authStore.isAuthenticated &&
       // Avoid infinite redirection
       to.name !== ROUTER.LOGIN &&
       // Allow public pages

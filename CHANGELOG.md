@@ -1,5 +1,14 @@
 # Frontend for Contact Book
 
+## [0.0.7] Logic for contact creation
+
+* Sort contact list by default on store
+* Implemented persistent store
+* Added store for contacts
+* Added form to add a new contact to contact-book
+* Added component to render add, edit or delete contact on modal
+* Added functions on utils, to store generic utilities
+
 ## [0.0.6] Logic for Authentication and Registration `06-11-2022`
 
 * Implemented use of local storage with Pinia
