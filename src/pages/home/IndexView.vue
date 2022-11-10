@@ -1,47 +1,48 @@
 <template>
   <q-page class="row items-center justify-center column">
-    <div class="row items-center column" v-if="contacts.length == 0">
+    <div class="row items-center column" v-if="contacts.length === 0">
       <q-icon class="text-muted" name="find_in_page" size="100px"/>
-      <h5 class="text-center">No data found please<br><span class="cursor-pointer text-secondary">Add a Contact</span></h5>
+      <h5 class="text-center">No data found please <br><br>
+        <q-btn @click="showNewContactModal = true" size="16px" flat dense icon-right="person_add" color="secondary" label="Add new contact" />
+      </h5>
     </div>
     <q-list v-else class="list-container">
       <q-page-sticky position="top" style="z-index: 1;" expand>
         <q-item class="user-list-info">
           <q-item-section top>
             <q-item-label lines="1">
-              <span class="text-weight-medium">Username Contacts book</span>
+              <span class="text-weight-medium">{{ profileStore.getUsername }}'s Contacts book</span>
             </q-item-label>
             <q-item-label caption lines="1">
-              user@email.com
+              {{ profileStore.getEmail }}
             </q-item-label>
           </q-item-section>
 
           <q-item-section class="justify-center" top side>
             <div class="text-grey-8 q-gutter-xs ">
-              <q-btn size="16px" flat dense icon="person_add" color="secondary" />
-              <!-- <q-btn size="16px" flat icon="more_vert" /> -->
+              <q-btn @click="showNewContactModal = true" size="16px" flat dense icon="person_add" color="secondary" />
             </div>
           </q-item-section>
         </q-item>
       </q-page-sticky>
 
       <q-expansion-item
-      v-for="contact in contacts" :key="contact.id"
+      v-for="contact in contacts " :key="contact.id"
       expand-separator
       :label="contact.name + ' ' + contact.lastname"
-      :caption="contact.phones[0].number"
+      :caption="contact.phones.length ? contact.phones[0].number : 'no number'"
       group="contact-list"
       >
       <template v-slot:header="{ contactName }">
         <q-item-section avatar>
           <q-avatar color="secondary" text-color="white">
-            {{ contact.letter }}
+            {{ getAvatar(contact.name, contact.lastname) }}
           </q-avatar>
         </q-item-section>
 
         <q-item-section class="row column">
-          <span>{{ contactName ? contact.name + ' ' + contact.lastname : contact.name + ' ' + contact.lastname }}</span>
-          <span class="text-muted">{{ contact.phones[0].number }}</span>
+          <span>{{ contactName ? getFullname(contact) : getFullname(contact) }}</span>
+          <span class="text-muted">{{ contact.phones[0] ? contact.phones[0].number : 'No phone stored' }}</span>
         </q-item-section>
 
       </template>
@@ -68,12 +69,13 @@
 
         <q-item class="items-center justify-around">
           <span class="text-bold">Birthday</span>
-          <span>{{ contact.birthday }}</span>
+          <span>{{ contact.birthday ? contact.birthday : 'No birthday stored' }}</span>
         </q-item>
       </q-card>
       </q-expansion-item>
     </q-list>
     <q-page-sticky
+      v-if="contacts.length !== 0"
       position="bottom-right"
       :offset="[18, 18]">
         <q-fab
@@ -98,50 +100,54 @@
         </q-menu>
       </q-fab>    
     </q-page-sticky>
+
+    <generic-modal
+    add-form
+    v-model="showNewContactModal"
+    @close-dialog="showNewContactModal = false"
+    modal-title="Add Contact"/>
+
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+
+import { useProfileStore } from 'src/stores/profile.store';
+import GenericModal from 'src/components/GenericModal.vue';
+import { IContact, IContactListResponse } from "src/interfaces/contacts.inteface";
+import { getAll } from "src/services/contacts.service";
+import { showNotify } from "src/utils/notify";
+import { getAvatar } from 'src/utils/functions';
+import { useContactStore } from "src/stores/contacts.store";
 
 let contacts = ref<any>([]);
 let searchText = ref(null);
 let isSearchVisible = ref(false);
+
+let showNewContactModal = ref(false);
+
+const profileStore = useProfileStore();
+const contactStore = useContactStore();
 
 const toggleSearch = () => {
   isSearchVisible.value = !isSearchVisible.value;
   searchText.value = null;
 }
 
-onMounted(() => {
-  let limit = Math.ceil(Math.random() * 100);
-  for (let index = 0; index < limit; index++) {
-    contacts.value.push({
-      name: 'Name' + index,
-      lastname: 'Lastname' + index,
-      letter: index < 10 ? '0'+index : index,
-      email: 'cmail'+index+'@contact-book.com',
-      birthday: Math.ceil(Math.random()*30) + ' - 0' + Math.ceil(Math.random()*10) + ' - 22' + Math.ceil(Math.random()*10),
-      photo: '',
-      phones: [
-        {
-        name: 'Home',
-        number: '' + Math.ceil(Math.random()*1000000000)
-        },
-        {
-        name: 'Office',
-        number: '' + Math.ceil(Math.random()*1000000000)
-        },
-        {
-        name: 'Personal',
-        number: '' + Math.ceil(Math.random()*1000000000)
-        },
-        {
-        name: 'Other',
-        number: '' + Math.ceil(Math.random()*1000000000)
-        },
-      ]});
+const getFullname = (contact: any) => {
+  return `${contact.name ? contact.name : 'No Name'} ${contact.lastname ? contact.lastname : ''}`
+}
+
+onMounted(async () => {
+  let response;
+  try {
+  response = await getAll();
+  } catch (error) {
+    showNotify('We got a problem...', 'negative');
   }
+  contactStore.setList(response?.results);
+  contacts.value = contactStore.getAll;
 });
 
 </script>
