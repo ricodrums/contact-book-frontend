@@ -13,6 +13,7 @@
       <q-card-section class="q-pt-none">
         <add-contact v-if="addForm" @close-dialog="$emit('closeDialog')"/>
         <edit-contact v-if="editForm" @close-dialog="$emit('closeDialog')"/>
+        <delete-contact v-if="deleteForm" @close-dialog="$emit('closeDialog')"/>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -22,6 +23,7 @@
   import { onMounted, ref } from 'vue';
   import AddContact from 'src/components/forms/AddContact.vue';
   import EditContact from 'src/components/forms/EditContact.vue';
+  import deleteContact from 'src/components/forms/DeleteContact.vue';
 
   let showModal = ref(false);
 
