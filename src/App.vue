@@ -14,11 +14,8 @@ const router$ = useRouter();
 const authStore = useAuthStore();
 
 onMounted(() => {
-  if(localStorage.getItem(KEYS_STORAGE.AUTHORIZATION)) {
-    const dataAuth = JSON.parse(localStorage.getItem(KEYS_STORAGE.AUTHORIZATION) as string) as IAuthResponse;
-    authStore.setAuth(dataAuth.accessToken, dataAuth.typeToken, dataAuth.refreshToken);
+  if(authStore.isAuthenticated) {
     router$.push({ name: ROUTER.HOME });
   }
 });
-
 </script>

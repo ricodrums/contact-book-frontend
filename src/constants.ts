@@ -5,6 +5,7 @@ export const API_ROUTES = {
   RESTORE: '/auth/restore',
   RECOVERY: '/auth/recovery',
   LOGOUT: '/auth/logout',
+  CONTACTS_BASE: '/contact',
 };
 
 export const ROUTER = {
@@ -20,6 +21,6 @@ export const ROUTER = {
 }
 
 export const KEYS_STORAGE = {
-  AUTHORIZATION: 'Authorization',
-  PROFILE: 'Profile',
+  AUTHORIZATION: 'auth',
+  PROFILE: 'profile',
 };

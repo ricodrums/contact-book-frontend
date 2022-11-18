@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { KEYS_STORAGE } from 'src/constants';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -10,9 +9,10 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    getAuth: ({ authorization }) => authorization,
     getToken: ({ accessToken }) => accessToken,
     getTypeToken: ({ typeToken }) => typeToken,
+    getRefreshToken: ({ refreshToken }) => refreshToken,
+    isAuthenticated: ({ authorization }) => authorization ?? false,
   },
 
   actions: {
@@ -21,11 +21,6 @@ export const useAuthStore = defineStore('auth', {
       this.accessToken = accessToken;
       this.typeToken = typeToken;
       this.refreshToken = refreshToken;
-      if (!localStorage.getItem(KEYS_STORAGE.AUTHORIZATION))
-        localStorage.setItem(
-          KEYS_STORAGE.AUTHORIZATION,
-          JSON.stringify({ accessToken, typeToken, refreshToken })
-        );
     },
     
     removeAuth() {
@@ -33,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
       this.accessToken = '';
       this.typeToken = '';
       this.refreshToken = '';
-      localStorage.removeItem(KEYS_STORAGE.AUTHORIZATION);
     },
   },
+  persist: true
 });

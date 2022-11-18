@@ -36,12 +36,19 @@
       <!-- Auth section -->
       <q-btn flat v-if="!isPublic">
         <q-avatar size="48px">
-          <img src="https://cdn.quasar.dev/img/avatar4.jpg">
+          <img
+            :src="profileStore.getAvatar"
+            alt="User Avatar"
+            v-if="profileStore.getPhoto !== ''"
+          />
+          <div class="avatar row justify-center items-center" v-else>
+            <span>{{ profileStore.getAvatar }}</span>
+          </div>
         </q-avatar>
         <q-menu>
           <div class="row no-wrap q-pa-md">
             <div class="column">
-              <div class="text-h6 q-mb-sm">John Doe</div>
+              <div class="text-h6 q-mb-sm">{{ profileStore.getUsername }}</div>
               <div class="q-gutter-sm">
                 <q-radio v-model="userLanguage" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="english" label="English" />
                 <q-radio v-model="userLanguage" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="spanish" label="Español" />
@@ -64,17 +71,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { ROUTER } from 'src/constants';
 import { logout } from 'src/services/auth.service'
 import { hideLoading, showLoading } from 'src/utils/loading';
-import { useRouter } from 'vue-router';
+import { useProfileStore } from "src/stores/profile.store";
 
 let userLanguage = ref<string>('english')
 defineProps<{ isPublic: boolean, }>()
 
 const router$ = useRouter();
+const profileStore = useProfileStore();
 
 const logoutButton = async () => {
   showLoading();
@@ -84,3 +93,13 @@ const logoutButton = async () => {
 }
 
 </script>
+
+<style lang="scss" scoped>
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 100%;
+  color: $white;
+  background: $secondary;
+}
+</style>
