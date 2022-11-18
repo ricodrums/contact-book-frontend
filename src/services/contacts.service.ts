@@ -88,5 +88,19 @@ export const edit = async (form: IContact, contactId) => {
   }
 };
 
+export const deleteContact = async (contactId) => {
+  showLoading();
+  
+  try {
+    const { data } = await api.delete<IContactResponse>(API_ROUTES.CONTACTS_BASE + '/' + contactId);
+    hideLoading();
+    return data;
+  } catch (error) {
+    hideLoading();
+    const { response } = error as AxiosError<IContactResponse>;
+    throw response?.data;
+  }
+};
+
 
 
