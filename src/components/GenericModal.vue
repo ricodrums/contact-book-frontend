@@ -12,14 +12,16 @@
 
       <q-card-section class="q-pt-none">
         <add-contact v-if="addForm" @close-dialog="$emit('closeDialog')"/>
+        <edit-contact v-if="editForm" @close-dialog="$emit('closeDialog')"/>
       </q-card-section>
     </q-card>
   </q-dialog>
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import AddContact from 'src/components/forms/AddContact.vue';
+  import EditContact from 'src/components/forms/EditContact.vue';
 
   let showModal = ref(false);
 

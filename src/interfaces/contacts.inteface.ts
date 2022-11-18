@@ -10,6 +10,7 @@ export interface IPhone extends ITimeStamps{
 }
 
 export interface IContact {
+    id?: string,
     name?: string,
     lastname?: string,
     email?: string,

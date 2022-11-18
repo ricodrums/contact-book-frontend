@@ -49,7 +49,7 @@
 
       <q-card flat bordered>
         <q-item class="text-muted items-center justify-around">
-          <q-btn icon="edit" color="warning" flat dense />
+          <q-btn icon="edit" color="warning" flat dense @click="showEditContactModal(contact.id)"/>
           <q-btn icon="delete" color="negative" flat dense />
         </q-item>
 
@@ -107,6 +107,12 @@
     @close-dialog="showNewContactModal = false"
     modal-title="Add Contact"/>
 
+    <generic-modal
+    edit-form
+    v-model="isEditContactVisible"
+    @close-dialog="isEditContactVisible = false"
+    modal-title="Edit Contact"/>
+
   </q-page>
 </template>
 
@@ -126,9 +132,16 @@ let searchText = ref(null);
 let isSearchVisible = ref(false);
 
 let showNewContactModal = ref(false);
+let isEditContactVisible = ref(false);
 
 const profileStore = useProfileStore();
 const contactStore = useContactStore();
+
+const showEditContactModal = (contactToEdit: string): void => {
+  console.log('Opening Edit Modal:', contactToEdit);
+  contactStore.setEditContact(contactToEdit);
+  isEditContactVisible.value = true;
+}
 
 const toggleSearch = () => {
   isSearchVisible.value = !isSearchVisible.value;
