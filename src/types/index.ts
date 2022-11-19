@@ -1,1 +1,1 @@
-export * from './colors.type'
+export * from './colors.type';

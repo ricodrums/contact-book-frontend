@@ -18,7 +18,7 @@ export const ROUTER = {
   INDEX: 'index',
   ABOUT: 'about',
   HOME: 'homeIndex',
-}
+};
 
 export const KEYS_STORAGE = {
   AUTHORIZATION: 'auth',

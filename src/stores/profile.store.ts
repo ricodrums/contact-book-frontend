@@ -9,22 +9,32 @@ export const useProfileStore = defineStore('profile', {
     username: '',
     email: '',
     photo: '',
-    phone: ''
+    phone: '',
   }),
   getters: {
     getAvatar: ({ photo, name, lastname, username, email }) =>
-        photo && photo !== '' ? photo
-        : name && name !== '' && lastname && lastname !== '' ? `${name.charAt(0)}${lastname.charAt(0)}`
-        : username && username !== '' ? `${username.charAt(0)}`
+      photo && photo !== ''
+        ? photo
+        : name && name !== '' && lastname && lastname !== ''
+        ? `${name.charAt(0)}${lastname.charAt(0)}`
+        : username && username !== ''
+        ? `${username.charAt(0)}`
         : `${email.charAt(0)}`,
 
     getPhoto: ({ photo }) => photo,
-    getUsername: ({ username }) => username === '' ? 'No username' : username,
+    getUsername: ({ username }) => (username === '' ? 'No username' : username),
     getFullname: ({ name, lastname }) => `${name} ${lastname}`,
-    getEmail: ({ email }) => email === '' ? 'No email' : email,
+    getEmail: ({ email }) => (email === '' ? 'No email' : email),
   },
   actions: {
-    setProfile(profile: { name?: string, lastname?: string, username?: string, email?: string, photo?: string, phone?: string }) {
+    setProfile(profile: {
+      name?: string;
+      lastname?: string;
+      username?: string;
+      email?: string;
+      photo?: string;
+      phone?: string;
+    }) {
       const { name, lastname, username, email, photo, phone } = profile;
       this.name = name ?? '';
       this.lastname = lastname ?? '';
@@ -41,7 +51,7 @@ export const useProfileStore = defineStore('profile', {
       this.email = '';
       this.photo = '';
       this.phone = '';
-    }
+    },
   },
-  persist: true
+  persist: true,
 });
