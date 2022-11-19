@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', {
       this.typeToken = typeToken;
       this.refreshToken = refreshToken;
     },
-    
+
     removeAuth() {
       this.authorization = false;
       this.accessToken = '';
@@ -30,5 +30,5 @@ export const useAuthStore = defineStore('auth', {
       this.refreshToken = '';
     },
   },
-  persist: true
+  persist: true,
 });

@@ -14,7 +14,7 @@ const router$ = useRouter();
 const authStore = useAuthStore();
 
 onMounted(() => {
-  if(authStore.isAuthenticated) {
+  if (authStore.isAuthenticated) {
     router$.push({ name: ROUTER.HOME });
   }
 });
