@@ -54,7 +54,7 @@
         "
         group="contact-list"
       >
-        <template v-slot:header="{ contactName }">
+        <template v-slot:header="{ expanded }">
           <q-item-section avatar>
             <q-avatar color="secondary" text-color="white">
               {{ getAvatar(contact.name, contact.lastname) }}
@@ -63,7 +63,7 @@
 
           <q-item-section class="row column">
             <span>{{
-              contactName ? getFullname(contact) : getFullname(contact)
+              expanded ? getFullname(contact) : getFullname(contact)
             }}</span>
             <span class="text-muted">{{
               contact.phones[0] ? contact.phones[0].number : 'No phone stored'
@@ -178,7 +178,7 @@ import { showNotify } from 'src/utils/notify';
 import { getAvatar } from 'src/utils/functions';
 import { useContactStore } from 'src/stores/contacts.store';
 
-let contacts = ref<any>([]);
+let contacts = ref<any[]>([]);
 let searchText = ref<string>();
 let isSearchVisible = ref(false);
 
@@ -210,11 +210,24 @@ const getFullname = (contact: any) => {
   }`;
 };
 
+let filterActivated = false;
+
 watch(searchText, async () => {
-  if (searchText.value && searchText.value?.length > 3) {
+  if (searchText.value && searchText.value?.length > 2) {
     let response;
+    filterActivated = true;
     try {
       response = await getAll({ search: searchText.value });
+      contactStore.setList(response?.results);
+      contacts.value = contactStore.getAll;
+    } catch (error) {
+      showNotify('We got a problem...', 'negative');
+    }
+  } else if (filterActivated) {
+    let response;
+    filterActivated = false;
+    try {
+      response = await getAll({});
     } catch (error) {
       showNotify('We got a problem...', 'negative');
     }
@@ -227,11 +240,11 @@ onMounted(async () => {
   let response;
   try {
     response = await getAll({});
+    contactStore.setList(response?.results);
+    contacts.value = contactStore.getAll;
   } catch (error) {
     showNotify('We got a problem...', 'negative');
   }
-  contactStore.setList(response?.results);
-  contacts.value = contactStore.getAll;
 });
 </script>
 
