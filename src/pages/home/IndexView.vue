@@ -105,28 +105,31 @@
             class="text-center items-center"
           >
             <q-card-section class="col-5 q-pa-sm">
-              <span>{{ phone.name ?? 'No description'}}</span>
+              <span>{{ phone.name ?? 'No description' }}</span>
             </q-card-section>
             <q-card-section class="col-5 q-pa-sm">
-              <span>{{ phone.number ?? 'No phone stored'}}</span>
+              <span>{{ phone.number ?? 'No phone stored' }}</span>
             </q-card-section>
             <div class="col-2 q-pa-sm items-center justify-around">
-              <q-btn
-                icon="menu"
-                color="indigo-4"
-                flat
-                dense
-              >
-              <q-menu>
-                <q-list style="min-width: 100px">
-                  <q-item clickable v-close-popup @click="showEditPhoneModal(contact.id, phone)">
-                    <q-item-section>Edit number</q-item-section>
-                  </q-item>
-                  <q-item clickable v-close-popup @click="showDeletePhoneModal(contact.id, phone)">
-                    <q-item-section>Delete number</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
+              <q-btn icon="menu" color="indigo-4" flat dense>
+                <q-menu>
+                  <q-list style="min-width: 100px">
+                    <q-item
+                      clickable
+                      v-close-popup
+                      @click="showEditPhoneModal(contact.id, phone)"
+                    >
+                      <q-item-section>Edit number</q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      v-close-popup
+                      @click="showDeletePhoneModal(contact.id, phone)"
+                    >
+                      <q-item-section>Delete number</q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
               </q-btn>
             </div>
           </q-card-section>
@@ -225,7 +228,11 @@ import { ref, onMounted, watch } from 'vue';
 
 import { useProfileStore } from 'src/stores/profile.store';
 import GenericModal from 'src/components/GenericModal.vue';
-import { IContact, IContactListResponse, IPhone } from 'src/interfaces/contacts.inteface';
+import {
+  IContact,
+  IContactListResponse,
+  IPhone,
+} from 'src/interfaces/contacts.inteface';
 import { getAll } from 'src/services/contacts.service';
 import { showNotify } from 'src/utils/notify';
 import { getAvatar } from 'src/utils/functions';
@@ -254,7 +261,7 @@ const showEditContactModal = (contactToEdit: string): void => {
 const hideEditContactModal = () => {
   fetchContacts({});
   isEditContactVisible.value = false;
-}
+};
 
 const showDeleteContactModal = (contactToEdit: string): void => {
   contactStore.setEditContact(contactToEdit);
@@ -274,7 +281,7 @@ const showCreatePhoneModal = (contactToEdit: string): void => {
 const hideCreatePhoneModal = () => {
   fetchContacts({});
   isCreatePhoneVisible.value = false;
-}
+};
 
 const showEditPhoneModal = (contactToEdit: string, phone: IPhone): void => {
   contactStore.setEditContact(contactToEdit);
@@ -285,7 +292,7 @@ const showEditPhoneModal = (contactToEdit: string, phone: IPhone): void => {
 const hideEditPhoneModal = () => {
   fetchContacts({});
   isEditPhoneVisible.value = false;
-}
+};
 
 const showDeletePhoneModal = (contactToEdit: string, phone: IPhone): void => {
   contactStore.setEditContact(contactToEdit);
@@ -296,7 +303,7 @@ const showDeletePhoneModal = (contactToEdit: string, phone: IPhone): void => {
 const hideDeletePhoneModal = () => {
   fetchContacts({});
   isDeletePhoneVisible.value = false;
-}
+};
 const toggleSearch = () => {
   isSearchVisible.value = !isSearchVisible.value;
   searchText.value = null;
@@ -310,44 +317,28 @@ const getFullname = (contact: any) => {
 
 let filterActivated = false;
 
+const fetchContacts = async (options: any) => {
+  try {
+    const response = await getAll(options ? options : {});
+    contactStore.setList(response?.results);
+    contacts.value = contactStore.getAll;
+  } catch (error) {
+    showNotify('We got a problem...', 'negative');
+  }
+};
+
 watch(searchText, async () => {
   if (searchText.value && searchText.value?.length > 2) {
-    let response;
     filterActivated = true;
-    try {
-      response = await getAll({ search: searchText.value });
-      contactStore.setList(response?.results);
-      contacts.value = contactStore.getAll;
-    } catch (error) {
-      showNotify('We got a problem...', 'negative');
-    }
+    await fetchContacts({ search: searchText.value });
   } else if (filterActivated) {
-    let response;
     filterActivated = false;
-    try {
-      response = await getAll({});
-      contactStore.setList(response?.results);
-    contacts.value = contactStore.getAll;
-    } catch (error) {
-      showNotify('We got a problem...', 'negative');
-    }
-    
+    await fetchContacts({});
   }
 });
 
 onMounted(async () => {
   fetchContacts({});
-});
-
-const fetchContacts = async (options: any) => {
-  let response;
-  try {
-  response = await getAll(options ? options : {});
-   contactStore.setList(response?.results);
-    contacts.value = contactStore.getAll;
-  } catch (error) {
-    showNotify('We got a problem...', 'negative');
-  }
 });
 </script>
 
