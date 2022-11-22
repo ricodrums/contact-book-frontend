@@ -101,7 +101,7 @@ export const changeImage = async (photo: any, contactId: string) => {
 
 export const edit = async (form: IContact, contactId: string) => {
   showLoading();
-  form.birthday = formatDate(form.birthday as string);
+  form.birthday = form.birthday ? formatDate(form.birthday as string) : undefined;
   try {
     const { data } = await api.put<IContactResponse>(
       `${API_ROUTES.CONTACTS_BASE}/${contactId}`,

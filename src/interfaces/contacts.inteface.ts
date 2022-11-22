@@ -1,5 +1,5 @@
 export interface ITimeStamps {
-  createdAt: Date;
+  createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
 }

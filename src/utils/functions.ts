@@ -19,3 +19,6 @@ export const getAvatar = (val1: string, val2?: string) =>
 
 export const formatDate = (val: string) =>
   val ? val.replaceAll('/', '-') : '';
+
+export const formatDateB = (val: string) =>
+  val ? val.replaceAll('-', '/') : '';

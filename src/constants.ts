@@ -6,6 +6,7 @@ export const API_ROUTES = {
   RECOVERY: '/auth/recovery',
   LOGOUT: '/auth/logout',
   CONTACTS_BASE: '/contact',
+  PHONES_BASE: '/phone',
 };
 
 export const ROUTER = {

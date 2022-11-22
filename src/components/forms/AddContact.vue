@@ -33,16 +33,12 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { create } from 'src/services/contacts.service';
 
 import { maxLength } from 'src/utils/validators';
 import { showNotify } from 'src/utils/notify';
 import { IContactResponse } from 'src/interfaces/contacts.inteface';
-import { log } from 'console';
 import { useContactStore } from 'src/stores/contacts.store';
-
-const router$ = useRouter();
 
 let name = ref<string>('');
 let lastname = ref<string>('');
