@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md q-px-md">
+  <q-form @submit="onSubmit" @reset="$emit('closeDialog');" class="q-gutter-md q-px-md">
     <q-input v-model="name" label="Name" />
 
     <q-input v-model="lastname" label="Lastname" />
@@ -31,22 +31,19 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { edit, getOne } from 'src/services/contacts.service';
 
 import { showNotify } from 'src/utils/notify';
 import { IContactResponse } from 'src/interfaces/contacts.inteface';
 import { useContactStore } from 'src/stores/contacts.store';
-
-const router$ = useRouter();
+import { formatDateB } from 'src/utils/functions';
 
 let contactId = ref<string>('');
-let name = ref<string>('');
-let lastname = ref<string>('');
-let email = ref<string>('');
-let birthday = ref<string>('');
+let name = ref<string | undefined>(undefined);
+let lastname = ref<string | undefined>(undefined);
+let email = ref<string | undefined>(undefined);
+let birthday = ref<string | undefined>(undefined);
 let photo = ref(null);
-let phone = ref<string>('');
 
 const $emit = defineEmits(['closeDialog']);
 const contactStore = useContactStore();
@@ -55,13 +52,13 @@ let response: IContactResponse;
 
 onMounted(async () => {
   contactId.value = contactStore.getContactToEdit;
-  console.log('Contact ID:', contactId.value);
   try {
     response = await getOne(contactId.value);
     contactId.value = response.id;
-    name.value = response.name ?? '';
-    lastname.value = response.lastname ?? '';
-    email.value = response.birthday ?? '';
+    name.value = response.name ?? undefined;
+    lastname.value = response.lastname ?? undefined;
+    email.value = response.email ?? undefined;
+    birthday.value = response.birthday ? formatDateB(response.birthday) : undefined;
   } catch (error) {
     console.error(error as string);
     showNotify('We got a problem', 'negative');
@@ -81,24 +78,12 @@ const onSubmit = async () => {
       contactId.value
     );
     showNotify('Success!', 'positive');
-    contactStore.pushContact(response);
   } catch (error) {
     console.error(error as string);
     showNotify('We got a problem', 'negative');
   }
   contactStore.removeContactToEdit();
-  onReset();
   $emit('closeDialog');
 };
 
-const onReset = () => {
-  name.value = '';
-  lastname.value = '';
-  email.value = '';
-  birthday.value = '';
-  photo.value = null;
-  phone.value = '';
-  contactStore.removeContactToEdit();
-  $emit('closeDialog');
-};
 </script>

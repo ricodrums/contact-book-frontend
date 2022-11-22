@@ -2,12 +2,14 @@ import { defineStore } from 'pinia';
 import {
   IContactListResponse,
   IContactResponse,
+  IPhone,
 } from 'src/interfaces/contacts.inteface';
 
 export const useContactStore = defineStore('contacts', {
   state: () => ({
     list: [],
     contactToEdit: '',
+    phoneToEdit: undefined,
   }),
   getters: {
     getAll: ({ list }) =>
@@ -17,6 +19,7 @@ export const useContactStore = defineStore('contacts', {
     getById: ({ list }, id: string) =>
       list.find((contact: IContactResponse) => contact.id === id),
     getContactToEdit: ({ contactToEdit }) => contactToEdit,
+    getPhoneToEdit: ({ phoneToEdit }) => phoneToEdit,
   },
   actions: {
     pushContact(contact: IContactResponse) {
@@ -27,6 +30,16 @@ export const useContactStore = defineStore('contacts', {
     },
     setEditContact(contactId: string) {
       this.contactToEdit = contactId;
+    },
+    setPhoneToEdit(phone: IPhone) {
+      this.phoneToEdit = phone;
+    },
+    addPhone(phone: IPhone, contactId: string) {
+      this.list.filter((contact: IContactResponse) => {
+        if (contact.id === contactId)
+          contact.phones?.push(phone);
+        
+      });
     },
     removeContactToEdit() {
       this.contactToEdit = '';

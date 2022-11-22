@@ -15,7 +15,7 @@
         />
       </h5>
     </div>
-    <q-list v-else class="list-container">
+    <q-list v-else-if="contacts.length !== 0" class="list-container">
       <q-page-sticky position="top" style="z-index: 1" expand>
         <q-item class="user-list-info">
           <q-item-section top>
@@ -74,6 +74,13 @@
         <q-card flat bordered>
           <q-item class="text-muted items-center justify-around">
             <q-btn
+              icon="add_call"
+              color="secondary"
+              flat
+              dense
+              @click="showCreatePhoneModal(contact.id)"
+            />
+            <q-btn
               icon="edit"
               color="warning"
               flat
@@ -89,29 +96,57 @@
             />
           </q-item>
 
-          <q-separator />
+          <q-separator style="height: 3px" />
 
           <q-card-section
             v-for="phone in contact.phones"
             :key="phone.id"
             horizontal
+            class="text-center items-center"
           >
-            <q-card-section class="col-5">
-              {{ phone.name }}
+            <q-card-section class="col-5 q-pa-sm">
+              <span>{{ phone.name ?? 'No description'}}</span>
             </q-card-section>
-            <q-separator vertical />
-            <q-card-section class="col-7">
-              {{ phone.number }}
+            <q-card-section class="col-5 q-pa-sm">
+              <span>{{ phone.number ?? 'No phone stored'}}</span>
             </q-card-section>
+            <div class="col-2 q-pa-sm items-center justify-around">
+              <q-btn
+                icon="menu"
+                color="indigo-4"
+                flat
+                dense
+              >
+              <q-menu>
+                <q-list style="min-width: 100px">
+                  <q-item clickable v-close-popup @click="showEditPhoneModal(contact.id, phone)">
+                    <q-item-section>Edit number</q-item-section>
+                  </q-item>
+                  <q-item clickable v-close-popup @click="showDeletePhoneModal(contact.id, phone)">
+                    <q-item-section>Delete number</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+              </q-btn>
+            </div>
           </q-card-section>
 
           <q-separator />
 
-          <q-item class="items-center justify-around">
-            <span class="text-bold">Birthday</span>
-            <span>{{
-              contact.birthday ? contact.birthday : 'No birthday stored'
-            }}</span>
+          <q-item class="items-center justify-around text-center">
+            <span class="col-4 text-bold">Birthday</span>
+            <span class="col-8">
+              {{ contact.birthday ? contact.birthday : 'No birthday stored' }}
+            </span>
+          </q-item>
+
+          <q-separator />
+
+          <q-item class="items-center justify-around text-center">
+            <span class="col-4 text-bold">Email</span>
+            <span class="col-8">
+              {{ contact.email ? contact.email : 'No email stored' }}
+            </span>
           </q-item>
         </q-card>
       </q-expansion-item>
@@ -151,15 +186,36 @@
     <generic-modal
       edit-form
       v-model="isEditContactVisible"
-      @close-dialog="isEditContactVisible = false"
+      @close-dialog="hideEditContactModal()"
       modal-title="Edit Contact"
     />
 
     <generic-modal
       delete-form
       v-model="isDeleteContactVisible"
-      @close-dialog="isDeleteContactVisible = false"
+      @close-dialog="hideDeleteContactModal()"
       modal-title="Delete Contact?"
+    />
+
+    <generic-modal
+      create-phone
+      v-model="isCreatePhoneVisible"
+      @close-dialog="hideCreatePhoneModal()"
+      modal-title="Add phone"
+    />
+
+    <generic-modal
+      edit-phone
+      v-model="isEditPhoneVisible"
+      @close-dialog="hideEditPhoneModal()"
+      modal-title="Edit phone"
+    />
+
+    <generic-modal
+      delete-phone
+      v-model="isDeletePhoneVisible"
+      @close-dialog="hideDeletePhoneModal()"
+      modal-title="Remove phone?"
     />
   </q-page>
 </template>
@@ -169,10 +225,7 @@ import { ref, onMounted, watch } from 'vue';
 
 import { useProfileStore } from 'src/stores/profile.store';
 import GenericModal from 'src/components/GenericModal.vue';
-import {
-  IContact,
-  IContactListResponse,
-} from 'src/interfaces/contacts.inteface';
+import { IContact, IContactListResponse, IPhone } from 'src/interfaces/contacts.inteface';
 import { getAll } from 'src/services/contacts.service';
 import { showNotify } from 'src/utils/notify';
 import { getAvatar } from 'src/utils/functions';
@@ -186,6 +239,10 @@ let showNewContactModal = ref(false);
 let isEditContactVisible = ref(false);
 let isDeleteContactVisible = ref(false);
 
+let isCreatePhoneVisible = ref(false);
+let isEditPhoneVisible = ref(false);
+let isDeletePhoneVisible = ref(false);
+
 const profileStore = useProfileStore();
 const contactStore = useContactStore();
 
@@ -194,11 +251,52 @@ const showEditContactModal = (contactToEdit: string): void => {
   isEditContactVisible.value = true;
 };
 
+const hideEditContactModal = () => {
+  fetchContacts({});
+  isEditContactVisible.value = false;
+}
+
 const showDeleteContactModal = (contactToEdit: string): void => {
   contactStore.setEditContact(contactToEdit);
   isDeleteContactVisible.value = true;
 };
 
+const hideDeleteContactModal = (): void => {
+  fetchContacts({});
+  isDeleteContactVisible.value = false;
+};
+
+const showCreatePhoneModal = (contactToEdit: string): void => {
+  contactStore.setEditContact(contactToEdit);
+  isCreatePhoneVisible.value = true;
+};
+
+const hideCreatePhoneModal = () => {
+  fetchContacts({});
+  isCreatePhoneVisible.value = false;
+}
+
+const showEditPhoneModal = (contactToEdit: string, phone: IPhone): void => {
+  contactStore.setEditContact(contactToEdit);
+  contactStore.setPhoneToEdit(phone);
+  isEditPhoneVisible.value = true;
+};
+
+const hideEditPhoneModal = () => {
+  fetchContacts({});
+  isEditPhoneVisible.value = false;
+}
+
+const showDeletePhoneModal = (contactToEdit: string, phone: IPhone): void => {
+  contactStore.setEditContact(contactToEdit);
+  contactStore.setPhoneToEdit(phone);
+  isDeletePhoneVisible.value = true;
+};
+
+const hideDeletePhoneModal = () => {
+  fetchContacts({});
+  isDeletePhoneVisible.value = false;
+}
 const toggleSearch = () => {
   isSearchVisible.value = !isSearchVisible.value;
   searchText.value = null;
@@ -228,19 +326,24 @@ watch(searchText, async () => {
     filterActivated = false;
     try {
       response = await getAll({});
+      contactStore.setList(response?.results);
+    contacts.value = contactStore.getAll;
     } catch (error) {
       showNotify('We got a problem...', 'negative');
     }
-    contactStore.setList(response?.results);
-    contacts.value = contactStore.getAll;
+    
   }
 });
 
 onMounted(async () => {
+  fetchContacts({});
+});
+
+const fetchContacts = async (options: any) => {
   let response;
   try {
-    response = await getAll({});
-    contactStore.setList(response?.results);
+  response = await getAll(options ? options : {});
+   contactStore.setList(response?.results);
     contacts.value = contactStore.getAll;
   } catch (error) {
     showNotify('We got a problem...', 'negative');
