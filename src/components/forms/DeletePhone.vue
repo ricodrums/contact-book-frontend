@@ -14,7 +14,6 @@
 import { onMounted, ref } from 'vue';
 
 import { showNotify } from 'src/utils/notify';
-import { IPhone } from 'src/interfaces/contacts.inteface';
 import { useContactStore } from 'src/stores/contacts.store';
 import { deletePhone } from 'src/services/phones.service';
 
