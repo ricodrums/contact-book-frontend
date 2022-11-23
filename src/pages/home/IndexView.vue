@@ -155,7 +155,7 @@
       </q-expansion-item>
     </q-list>
     <q-page-sticky
-      v-if="contacts.length !== 0"
+      v-if="withContact"
       position="bottom-right"
       :offset="[18, 18]"
     >
@@ -228,15 +228,13 @@ import { ref, onMounted, watch } from 'vue';
 
 import { useProfileStore } from 'src/stores/profile.store';
 import GenericModal from 'src/components/GenericModal.vue';
-import {
-  IContact,
-  IContactListResponse,
-  IPhone,
-} from 'src/interfaces/contacts.inteface';
+import { IPhone } from 'src/interfaces/contacts.inteface';
 import { getAll } from 'src/services/contacts.service';
 import { showNotify } from 'src/utils/notify';
 import { getAvatar } from 'src/utils/functions';
 import { useContactStore } from 'src/stores/contacts.store';
+
+let withContact = ref<boolean>(false);
 
 let contacts = ref<any[]>([]);
 let searchText = ref<string>();
@@ -337,8 +335,10 @@ watch(searchText, async () => {
   }
 });
 
-onMounted(async () => {
-  fetchContacts({});
+onMounted(() => {
+  fetchContacts({}).then(() => {
+    withContact.value = !!contacts.value.length;
+  });
 });
 </script>
 
