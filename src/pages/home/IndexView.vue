@@ -50,7 +50,7 @@
         expand-separator
         :label="contact.name + ' ' + contact.lastname"
         :caption="
-          contact.phones.length ? contact.phones[0].number : 'no number'
+          contact.phones?.length ? contact.phones[0].number : 'no number'
         "
         group="contact-list"
       >
@@ -62,12 +62,12 @@
           </q-item-section>
 
           <q-item-section class="row column">
-            <span>{{
-              expanded ? getFullname(contact) : getFullname(contact)
-            }}</span>
-            <span class="text-muted">{{
-              contact.phones[0] ? contact.phones[0].number : 'No phone stored'
-            }}</span>
+            <span>
+              {{ expanded ? getFullname(contact) : getFullname(contact) }}
+            </span>
+            <span class="text-muted">
+              {{ contact.phones?.length ? contact.phones[0].number : 'No phone stored' }}
+            </span>
           </q-item-section>
         </template>
 
@@ -182,7 +182,7 @@
     <generic-modal
       add-form
       v-model="showNewContactModal"
-      @close-dialog="showNewContactModal = false"
+      @close-dialog="hideNewContactModal()"
       modal-title="Add Contact"
     />
 
@@ -251,6 +251,11 @@ let isDeletePhoneVisible = ref(false);
 const profileStore = useProfileStore();
 const contactStore = useContactStore();
 
+const hideNewContactModal = (): void => {
+  withContact.value = !!contacts.value.length;
+  showNewContactModal.value = false;
+}
+
 const showEditContactModal = (contactToEdit: string): void => {
   contactStore.setEditContact(contactToEdit);
   isEditContactVisible.value = true;
@@ -268,6 +273,7 @@ const showDeleteContactModal = (contactToEdit: string): void => {
 
 const hideDeleteContactModal = (): void => {
   fetchContacts({});
+  withContact.value = contacts.value.length ? false : true;
   isDeleteContactVisible.value = false;
 };
 
@@ -302,6 +308,7 @@ const hideDeletePhoneModal = () => {
   fetchContacts({});
   isDeletePhoneVisible.value = false;
 };
+
 const toggleSearch = () => {
   isSearchVisible.value = !isSearchVisible.value;
   searchText.value = null;
@@ -318,7 +325,7 @@ let filterActivated = false;
 const fetchContacts = async (options: any) => {
   try {
     const response = await getAll(options ? options : {});
-    contactStore.setList(response?.results);
+    contactStore.setList(response.results ?? []);
     contacts.value = contactStore.getAll;
   } catch (error) {
     showNotify('We got a problem...', 'negative');
