@@ -77,6 +77,5 @@ export const logout = async () => {
   authStore.removeAuth();
   profileStore.removeProfile();
   contactStore.resetStore();
-  api.defaults.headers.common['Authorization'] = '';
   hideLoading();
 };
