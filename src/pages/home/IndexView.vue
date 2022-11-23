@@ -66,7 +66,11 @@
               {{ expanded ? getFullname(contact) : getFullname(contact) }}
             </span>
             <span class="text-muted">
-              {{ contact.phones?.length ? contact.phones[0].number : 'No phone stored' }}
+              {{
+                contact.phones?.length
+                  ? contact.phones[0].number
+                  : 'No phone stored'
+              }}
             </span>
           </q-item-section>
         </template>
@@ -138,8 +142,17 @@
 
           <q-item class="items-center justify-around text-center">
             <span class="col-4 text-bold">Birthday</span>
-            <span class="col-8">
-              {{ contact.birthday ? contact.birthday : 'No birthday stored' }}
+            <span class="col-8 flex items-center justify-around">
+              {{ contact.birthday ?? 'No birthday stored' }}
+              <q-btn
+                round
+                color="negative"
+                icon="cake"
+                flat
+                dense
+                v-if="contact.birthday"
+                @click="showBirthday(contact.id)"
+              />
             </span>
           </q-item>
 
@@ -229,10 +242,11 @@ import { ref, onMounted, watch } from 'vue';
 import { useProfileStore } from 'src/stores/profile.store';
 import GenericModal from 'src/components/GenericModal.vue';
 import { IPhone } from 'src/interfaces/contacts.inteface';
-import { getAll } from 'src/services/contacts.service';
+import { getAll, getBirthday } from 'src/services/contacts.service';
 import { showNotify } from 'src/utils/notify';
 import { getAvatar } from 'src/utils/functions';
 import { useContactStore } from 'src/stores/contacts.store';
+import { Notify } from 'quasar';
 
 let withContact = ref<boolean>(false);
 
@@ -254,7 +268,7 @@ const contactStore = useContactStore();
 const hideNewContactModal = (): void => {
   withContact.value = !!contacts.value.length;
   showNewContactModal.value = false;
-}
+};
 
 const showEditContactModal = (contactToEdit: string): void => {
   contactStore.setEditContact(contactToEdit);
@@ -330,6 +344,14 @@ const fetchContacts = async (options: any) => {
   } catch (error) {
     showNotify('We got a problem...', 'negative');
   }
+};
+
+const showBirthday = async (contactId: string) => {
+  const response = await getBirthday(contactId);
+
+  Notify.create({
+    message: `Cumple ${response.age + 1} en ${response.days} dias`,
+  });
 };
 
 watch(searchText, async () => {
