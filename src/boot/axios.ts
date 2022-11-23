@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { useAuthStore } from 'src/stores/auth.store';
-import { refreshToken } from 'src/services/auth.service';
+import { logout, refreshToken } from 'src/services/auth.service';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -34,10 +34,11 @@ api.interceptors.response.use(
   (response) => response,
   async (reject) => {
     const { config, response } = reject;
-    if (response.status !== 401) return Promise.reject(reject);
+    if (response.status !== 401 && response.status !== 403)
+      return Promise.reject(reject);
 
-    if (config._retry) {
-      authStore.removeAuth();
+    if (config._retry || response.status === 403) {
+      await logout();
       return Promise.reject(reject);
     }
 
