@@ -7,14 +7,12 @@ export const useAuthStore = defineStore('auth', {
     typeToken: '',
     refreshToken: '',
   }),
-
   getters: {
     getToken: ({ accessToken }) => accessToken,
     getTypeToken: ({ typeToken }) => typeToken,
     getRefreshToken: ({ refreshToken }) => refreshToken,
     isAuthenticated: ({ authorization }) => authorization ?? false,
   },
-
   actions: {
     setAuth(accessToken: string, typeToken: string, refreshToken: string) {
       this.authorization = true;
