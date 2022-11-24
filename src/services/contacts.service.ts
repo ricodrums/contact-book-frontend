@@ -101,7 +101,9 @@ export const changeImage = async (photo: any, contactId: string) => {
 
 export const edit = async (form: IContact, contactId: string) => {
   showLoading();
-  form.birthday = form.birthday ? formatDate(form.birthday as string) : undefined;
+  form.birthday = form.birthday
+    ? formatDate(form.birthday as string)
+    : undefined;
   try {
     const { data } = await api.put<IContactResponse>(
       `${API_ROUTES.CONTACTS_BASE}/${contactId}`,
@@ -126,6 +128,21 @@ export const deleteContact = async (contactId: string) => {
   try {
     const { data } = await api.delete<IContactResponse>(
       API_ROUTES.CONTACTS_BASE + '/' + contactId
+    );
+    hideLoading();
+    return data;
+  } catch (error) {
+    hideLoading();
+    const { response } = error as AxiosError<IContactResponse>;
+    throw response?.data;
+  }
+};
+
+export const getBirthday = async (contactId: string) => {
+  showLoading();
+  try {
+    const { data } = await api.get<{ age: number; days: number }>(
+      API_ROUTES.CONTACTS_BASE + '/' + contactId + '/birthday'
     );
     hideLoading();
     return data;

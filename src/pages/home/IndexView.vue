@@ -66,7 +66,11 @@
               {{ expanded ? getFullname(contact) : getFullname(contact) }}
             </span>
             <span class="text-muted">
-              {{ contact.phones?.length ? contact.phones[0].number : 'No phone stored' }}
+              {{
+                contact.phones?.length
+                  ? contact.phones[0].number
+                  : 'No phone stored'
+              }}
             </span>
           </q-item-section>
         </template>
@@ -104,7 +108,7 @@
             horizontal
             class="text-center items-center"
           >
-            <q-card-section class="col-5 q-pa-sm">
+            <q-card-section class="col-5 q-pa-sm text-bold">
               <span>{{ phone.name ?? 'No description' }}</span>
             </q-card-section>
             <q-card-section class="col-5 q-pa-sm">
@@ -136,20 +140,31 @@
 
           <q-separator />
 
-          <q-item class="items-center justify-around text-center">
-            <span class="col-4 text-bold">Birthday</span>
-            <span class="col-8">
-              {{ contact.birthday ? contact.birthday : 'No birthday stored' }}
+          <q-item class="items-center justify-between q-pa-none text-center">
+            <span class="col-5 text-bold">Birthday</span>
+            <span class="col-5">
+              {{ contact.birthday ?? 'No birthday stored' }}
+            </span>
+            <span class="col-2">
+              <q-btn
+                color="secondary"
+                icon="cake"
+                flat
+                dense
+                v-if="contact.birthday"
+                @click="showBirthday(contact.id)"
+              />
             </span>
           </q-item>
 
           <q-separator />
 
-          <q-item class="items-center justify-around text-center">
-            <span class="col-4 text-bold">Email</span>
-            <span class="col-8">
+          <q-item class="items-center justify-between q-pa-none text-center">
+            <span class="col-5 text-bold">Email</span>
+            <span class="col-5">
               {{ contact.email ? contact.email : 'No email stored' }}
             </span>
+            <span class="col-2"></span>
           </q-item>
         </q-card>
       </q-expansion-item>
@@ -229,10 +244,11 @@ import { ref, onMounted, watch } from 'vue';
 import { useProfileStore } from 'src/stores/profile.store';
 import GenericModal from 'src/components/GenericModal.vue';
 import { IPhone } from 'src/interfaces/contacts.inteface';
-import { getAll } from 'src/services/contacts.service';
+import { getAll, getBirthday } from 'src/services/contacts.service';
 import { showNotify } from 'src/utils/notify';
 import { getAvatar } from 'src/utils/functions';
 import { useContactStore } from 'src/stores/contacts.store';
+import { Notify } from 'quasar';
 
 let withContact = ref<boolean>(false);
 
@@ -254,7 +270,7 @@ const contactStore = useContactStore();
 const hideNewContactModal = (): void => {
   withContact.value = !!contacts.value.length;
   showNewContactModal.value = false;
-}
+};
 
 const showEditContactModal = (contactToEdit: string): void => {
   contactStore.setEditContact(contactToEdit);
@@ -330,6 +346,20 @@ const fetchContacts = async (options: any) => {
   } catch (error) {
     showNotify('We got a problem...', 'negative');
   }
+};
+
+const showBirthday = async (contactId: string) => {
+  const response = await getBirthday(contactId);
+
+  Notify.create({
+    message: `Happy birthday in ${response.days} days!`,
+    caption: `${response.age} years old`,
+    classes: 'text-center',
+    multiLine: true,
+    timeout: 2000,
+    color: 'secondary',
+    position: 'center',
+  });
 };
 
 watch(searchText, async () => {

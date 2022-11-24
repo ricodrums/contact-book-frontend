@@ -13,7 +13,7 @@
         <q-input
           type="password"
           v-model="password"
-          label="Your paassword *"
+          label="Your password *"
           lazy-rules
           :rules="[
             (val) => required(val) || 'Please type your password',
@@ -26,7 +26,7 @@
         <q-input
           type="password"
           v-model="confirmPassword"
-          label="Repeat your paassword *"
+          label="Repeat your password *"
           lazy-rules
           :rules="[
             (val) => required(val) || 'Please type your password',
