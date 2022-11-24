@@ -350,7 +350,9 @@ const showBirthday = async (contactId: string) => {
   const response = await getBirthday(contactId);
 
   Notify.create({
-    message: `Turns ${response.age + 1} years old, in ${response.days} days.`,
+    message: `Happy birthday in ${response.days} days!`,
+    caption: `${response.age} years old`,
+    classes: 'text-center',
     multiLine: true,
     timeout: 2000,
     color: 'primary',
