@@ -1,163 +1,396 @@
 <template>
   <q-page class="row items-center justify-center column">
-    <div class="row items-center column" v-if="contacts.length == 0">
-      <q-icon class="text-muted" name="find_in_page" size="100px"/>
-      <h5 class="text-center">No data found please<br><span class="cursor-pointer text-secondary">Add a Contact</span></h5>
+    <div class="row items-center column" v-if="contacts.length === 0">
+      <q-icon class="text-muted" name="find_in_page" size="100px" />
+      <h5 class="text-center">
+        No data found please <br /><br />
+        <q-btn
+          @click="showNewContactModal = true"
+          size="16px"
+          flat
+          dense
+          icon-right="person_add"
+          color="secondary"
+          label="Add new contact"
+        />
+      </h5>
     </div>
-    <q-list v-else class="list-container">
-      <q-page-sticky position="top" style="z-index: 1;" expand>
+    <q-list v-else-if="contacts.length !== 0" class="list-container">
+      <q-page-sticky position="top" style="z-index: 1" expand>
         <q-item class="user-list-info">
           <q-item-section top>
             <q-item-label lines="1">
-              <span class="text-weight-medium">Username Contacts book</span>
+              <span class="text-weight-medium"
+                >{{ profileStore.getUsername }}'s Contacts book</span
+              >
             </q-item-label>
             <q-item-label caption lines="1">
-              user@email.com
+              {{ profileStore.getEmail }}
             </q-item-label>
           </q-item-section>
 
           <q-item-section class="justify-center" top side>
-            <div class="text-grey-8 q-gutter-xs ">
-              <q-btn size="16px" flat dense icon="person_add" color="secondary" />
-              <!-- <q-btn size="16px" flat icon="more_vert" /> -->
+            <div class="text-grey-8 q-gutter-xs">
+              <q-btn
+                @click="showNewContactModal = true"
+                size="16px"
+                flat
+                dense
+                icon="person_add"
+                color="secondary"
+              />
             </div>
           </q-item-section>
         </q-item>
       </q-page-sticky>
 
       <q-expansion-item
-      v-for="contact in contacts" :key="contact.id"
-      expand-separator
-      :label="contact.name + ' ' + contact.lastname"
-      :caption="contact.phones[0].number"
-      group="contact-list"
+        v-for="contact in contacts"
+        :key="contact.id"
+        expand-separator
+        :label="contact.name + ' ' + contact.lastname"
+        :caption="
+          contact.phones?.length ? contact.phones[0].number : 'no number'
+        "
+        group="contact-list"
       >
-      <template v-slot:header="{ contactName }">
-        <q-item-section avatar>
-          <q-avatar color="secondary" text-color="white">
-            {{ contact.letter }}
-          </q-avatar>
-        </q-item-section>
+        <template v-slot:header="{ expanded }">
+          <q-item-section avatar>
+            <q-avatar color="secondary" text-color="white">
+              {{ getAvatar(contact.name, contact.lastname) }}
+            </q-avatar>
+          </q-item-section>
 
-        <q-item-section class="row column">
-          <span>{{ contactName ? contact.name + ' ' + contact.lastname : contact.name + ' ' + contact.lastname }}</span>
-          <span class="text-muted">{{ contact.phones[0].number }}</span>
-        </q-item-section>
+          <q-item-section class="row column">
+            <span>
+              {{ expanded ? getFullname(contact) : getFullname(contact) }}
+            </span>
+            <span class="text-muted">
+              {{
+                contact.phones?.length
+                  ? contact.phones[0].number
+                  : 'No phone stored'
+              }}
+            </span>
+          </q-item-section>
+        </template>
 
-      </template>
+        <q-card flat bordered>
+          <q-item class="text-muted items-center justify-around">
+            <q-btn
+              icon="add_call"
+              color="secondary"
+              flat
+              dense
+              @click="showCreatePhoneModal(contact.id)"
+            />
+            <q-btn
+              icon="edit"
+              color="warning"
+              flat
+              dense
+              @click="showEditContactModal(contact.id)"
+            />
+            <q-btn
+              icon="delete"
+              color="negative"
+              flat
+              dense
+              @click="showDeleteContactModal(contact.id)"
+            />
+          </q-item>
 
-      <q-card flat bordered>
-        <q-item class="text-muted items-center justify-around">
-          <q-btn icon="edit" color="warning" flat dense />
-          <q-btn icon="delete" color="negative" flat dense />
-        </q-item>
+          <q-separator style="height: 3px" />
 
-        <q-separator />
-
-        <q-card-section v-for="phone in contact.phones" :key="phone.id" horizontal>
-          <q-card-section class="col-5">
-            {{ phone.name }}
+          <q-card-section
+            v-for="phone in contact.phones"
+            :key="phone.id"
+            horizontal
+            class="text-center items-center"
+          >
+            <q-card-section class="col-5 q-pa-sm text-bold">
+              <span>{{ phone.name ?? 'No description' }}</span>
+            </q-card-section>
+            <q-card-section class="col-5 q-pa-sm">
+              <span>{{ phone.number ?? 'No phone stored' }}</span>
+            </q-card-section>
+            <div class="col-2 q-pa-sm items-center justify-around">
+              <q-btn icon="menu" color="indigo-4" flat dense>
+                <q-menu>
+                  <q-list style="min-width: 100px">
+                    <q-item
+                      clickable
+                      v-close-popup
+                      @click="showEditPhoneModal(contact.id, phone)"
+                    >
+                      <q-item-section>Edit number</q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      v-close-popup
+                      @click="showDeletePhoneModal(contact.id, phone)"
+                    >
+                      <q-item-section>Delete number</q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-btn>
+            </div>
           </q-card-section>
-          <q-separator vertical />
-          <q-card-section class="col-7">
-            {{ phone.number }}
-          </q-card-section>
-        </q-card-section>
 
-        <q-separator />
+          <q-separator />
 
-        <q-item class="items-center justify-around">
-          <span class="text-bold">Birthday</span>
-          <span>{{ contact.birthday }}</span>
-        </q-item>
-      </q-card>
+          <q-item class="items-center justify-between q-pa-none text-center">
+            <span class="col-5 text-bold">Birthday</span>
+            <span class="col-5">
+              {{ contact.birthday ?? 'No birthday stored' }}
+            </span>
+            <span class="col-2">
+              <q-btn
+                color="secondary"
+                icon="cake"
+                flat
+                dense
+                v-if="contact.birthday"
+                @click="showBirthday(contact.id)"
+              />
+            </span>
+          </q-item>
+
+          <q-separator />
+
+          <q-item class="items-center justify-between q-pa-none text-center">
+            <span class="col-5 text-bold">Email</span>
+            <span class="col-5">
+              {{ contact.email ? contact.email : 'No email stored' }}
+            </span>
+            <span class="col-2"></span>
+          </q-item>
+        </q-card>
       </q-expansion-item>
     </q-list>
     <q-page-sticky
+      v-if="withContact"
       position="bottom-right"
-      :offset="[18, 18]">
-        <q-fab
+      :offset="[18, 18]"
+    >
+      <q-fab
         color="indigo-3"
         icon="search"
         direction="left"
         size="20px"
         @click="toggleSearch()"
-        >
+      >
         <q-menu
-        v-model="isSearchVisible"
-        class="q-px-lg q-py-xd"
-        anchor="center left"
-        self="center right"
-        style="width: 50rem; max-width: 70%;"
-        persistent
+          v-model="isSearchVisible"
+          class="q-px-lg q-py-xd"
+          anchor="center left"
+          self="center right"
+          style="width: 50rem; max-width: 70%"
+          persistent
         >
-          <q-input
-            v-model="searchText"
-            label="Type to search something"
-          />
+          <q-input v-model="searchText" label="Type to search something" />
         </q-menu>
-      </q-fab>    
+      </q-fab>
     </q-page-sticky>
+
+    <generic-modal
+      add-form
+      v-model="showNewContactModal"
+      @close-dialog="hideNewContactModal()"
+      modal-title="Add Contact"
+    />
+
+    <generic-modal
+      edit-form
+      v-model="isEditContactVisible"
+      @close-dialog="hideEditContactModal()"
+      modal-title="Edit Contact"
+    />
+
+    <generic-modal
+      delete-form
+      v-model="isDeleteContactVisible"
+      @close-dialog="hideDeleteContactModal()"
+      modal-title="Delete Contact?"
+    />
+
+    <generic-modal
+      create-phone
+      v-model="isCreatePhoneVisible"
+      @close-dialog="hideCreatePhoneModal()"
+      modal-title="Add phone"
+    />
+
+    <generic-modal
+      edit-phone
+      v-model="isEditPhoneVisible"
+      @close-dialog="hideEditPhoneModal()"
+      modal-title="Edit phone"
+    />
+
+    <generic-modal
+      delete-phone
+      v-model="isDeletePhoneVisible"
+      @close-dialog="hideDeletePhoneModal()"
+      modal-title="Remove phone?"
+    />
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from 'vue';
 
-let contacts = ref<any>([]);
-let searchText = ref(null);
+import { useProfileStore } from 'src/stores/profile.store';
+import GenericModal from 'src/components/GenericModal.vue';
+import { IPhone } from 'src/interfaces/contacts.inteface';
+import { getAll, getBirthday } from 'src/services/contacts.service';
+import { showNotify } from 'src/utils/notify';
+import { getAvatar } from 'src/utils/functions';
+import { useContactStore } from 'src/stores/contacts.store';
+import { Notify } from 'quasar';
+
+let withContact = ref<boolean>(false);
+
+let contacts = ref<any[]>([]);
+let searchText = ref<string>();
 let isSearchVisible = ref(false);
+
+let showNewContactModal = ref(false);
+let isEditContactVisible = ref(false);
+let isDeleteContactVisible = ref(false);
+
+let isCreatePhoneVisible = ref(false);
+let isEditPhoneVisible = ref(false);
+let isDeletePhoneVisible = ref(false);
+
+const profileStore = useProfileStore();
+const contactStore = useContactStore();
+
+const hideNewContactModal = (): void => {
+  withContact.value = !!contacts.value.length;
+  showNewContactModal.value = false;
+};
+
+const showEditContactModal = (contactToEdit: string): void => {
+  contactStore.setEditContact(contactToEdit);
+  isEditContactVisible.value = true;
+};
+
+const hideEditContactModal = () => {
+  fetchContacts({});
+  isEditContactVisible.value = false;
+};
+
+const showDeleteContactModal = (contactToEdit: string): void => {
+  contactStore.setEditContact(contactToEdit);
+  isDeleteContactVisible.value = true;
+};
+
+const hideDeleteContactModal = (): void => {
+  fetchContacts({});
+  withContact.value = contacts.value.length ? false : true;
+  isDeleteContactVisible.value = false;
+};
+
+const showCreatePhoneModal = (contactToEdit: string): void => {
+  contactStore.setEditContact(contactToEdit);
+  isCreatePhoneVisible.value = true;
+};
+
+const hideCreatePhoneModal = () => {
+  fetchContacts({});
+  isCreatePhoneVisible.value = false;
+};
+
+const showEditPhoneModal = (contactToEdit: string, phone: IPhone): void => {
+  contactStore.setEditContact(contactToEdit);
+  contactStore.setPhoneToEdit(phone);
+  isEditPhoneVisible.value = true;
+};
+
+const hideEditPhoneModal = () => {
+  fetchContacts({});
+  isEditPhoneVisible.value = false;
+};
+
+const showDeletePhoneModal = (contactToEdit: string, phone: IPhone): void => {
+  contactStore.setEditContact(contactToEdit);
+  contactStore.setPhoneToEdit(phone);
+  isDeletePhoneVisible.value = true;
+};
+
+const hideDeletePhoneModal = () => {
+  fetchContacts({});
+  isDeletePhoneVisible.value = false;
+};
 
 const toggleSearch = () => {
   isSearchVisible.value = !isSearchVisible.value;
   searchText.value = null;
-}
+};
 
-onMounted(() => {
-  let limit = Math.ceil(Math.random() * 100);
-  for (let index = 0; index < limit; index++) {
-    contacts.value.push({
-      name: 'Name' + index,
-      lastname: 'Lastname' + index,
-      letter: index < 10 ? '0'+index : index,
-      email: 'cmail'+index+'@contact-book.com',
-      birthday: Math.ceil(Math.random()*30) + ' - 0' + Math.ceil(Math.random()*10) + ' - 22' + Math.ceil(Math.random()*10),
-      photo: '',
-      phones: [
-        {
-        name: 'Home',
-        number: '' + Math.ceil(Math.random()*1000000000)
-        },
-        {
-        name: 'Office',
-        number: '' + Math.ceil(Math.random()*1000000000)
-        },
-        {
-        name: 'Personal',
-        number: '' + Math.ceil(Math.random()*1000000000)
-        },
-        {
-        name: 'Other',
-        number: '' + Math.ceil(Math.random()*1000000000)
-        },
-      ]});
+const getFullname = (contact: any) => {
+  return `${contact.name ? contact.name : 'No Name'} ${
+    contact.lastname ? contact.lastname : ''
+  }`;
+};
+
+let filterActivated = false;
+
+const fetchContacts = async (options: any) => {
+  try {
+    const response = await getAll(options ? options : {});
+    contactStore.setList(response.results ?? []);
+    contacts.value = contactStore.getAll;
+  } catch (error) {
+    showNotify('We got a problem...', 'negative');
+  }
+};
+
+const showBirthday = async (contactId: string) => {
+  const response = await getBirthday(contactId);
+
+  Notify.create({
+    message: `Happy birthday in ${response.days} days!`,
+    caption: `${response.age} years old`,
+    classes: 'text-center',
+    multiLine: true,
+    timeout: 2000,
+    color: 'secondary',
+    position: 'center',
+  });
+};
+
+watch(searchText, async () => {
+  if (searchText.value && searchText.value?.length > 2) {
+    filterActivated = true;
+    await fetchContacts({ search: searchText.value });
+  } else if (filterActivated) {
+    filterActivated = false;
+    await fetchContacts({});
   }
 });
 
+onMounted(() => {
+  fetchContacts({}).then(() => {
+    withContact.value = !!contacts.value.length;
+  });
+});
 </script>
 
 <style lang="scss">
-  .list-container {
-    height: 82vh;
-    overflow-y: scroll;
-    padding-top: 1rem;
-    width: 40rem;
-    max-width: 100%;
-  }
+.list-container {
+  height: 82vh;
+  overflow-y: scroll;
+  padding-top: 1rem;
+  width: 40rem;
+  max-width: 100%;
+}
 
-  .user-list-info {
-    width: 40rem;
-    max-width: 100%;
-    background: $white;
-  }
+.user-list-info {
+  width: 40rem;
+  max-width: 100%;
+  background: $white;
+}
 </style>

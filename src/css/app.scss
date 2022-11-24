@@ -1,45 +1,45 @@
 // app global css in SCSS form
 a {
-    font-weight: bold;
-    text-decoration: none;
-    color: $secondary;
+  font-weight: bold;
+  text-decoration: none;
+  color: $secondary;
 }
 
 .background {
-    background-image: url('../assets/img/background.svg');
-    background-repeat: no-repeat;
-    background-size: cover;
+  background-image: url('../assets/img/background.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .main-layout {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .container {
-    width: 1440px;
-    height: 95vh;
-    max-width: 95%;
-    overflow: hidden;
-    border-radius: 10px;
-    border: 1px solid $info;
-    backdrop-filter: blur(15px);
+  width: 1440px;
+  height: 95vh;
+  max-width: 95%;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid $info;
+  backdrop-filter: blur(15px);
 }
 
 .text-muted {
-    color: $muted;
+  color: $muted;
 }
 
 // Hide all scroll bars
 * {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
-  /* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide scrollbar for Chrome, Safari and Opera */
 *::-webkit-scrollbar {
-    display: none;
+  display: none;
 }

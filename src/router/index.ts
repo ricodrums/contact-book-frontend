@@ -21,12 +21,13 @@ import routes from './routes';
  */
 
 export default route(function (/* { store, ssrContext } */) {
-
   const authStore = useAuthStore();
 
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
+    : process.env.VUE_ROUTER_MODE === 'history'
+    ? createWebHistory
+    : createWebHashHistory;
 
   const router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -42,7 +43,7 @@ export default route(function (/* { store, ssrContext } */) {
     showLoading();
     if (
       // make sure the user is authenticated
-      !localStorage.getItem(KEYS_STORAGE.AUTHORIZATION) &&
+      !authStore.isAuthenticated &&
       // Avoid infinite redirection
       to.name !== ROUTER.LOGIN &&
       // Allow public pages
@@ -50,9 +51,9 @@ export default route(function (/* { store, ssrContext } */) {
     ) {
       hideLoading();
       // redirect the user to the login page
-      return { name: ROUTER.LOGIN }
+      return { name: ROUTER.LOGIN };
     }
     hideLoading();
-  })
+  });
   return router;
 });
