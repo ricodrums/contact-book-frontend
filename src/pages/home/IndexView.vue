@@ -147,7 +147,7 @@
             </span>
             <span class="col-2">
               <q-btn
-                color="negative"
+                color="secondary"
                 icon="cake"
                 flat
                 dense
@@ -357,7 +357,7 @@ const showBirthday = async (contactId: string) => {
     classes: 'text-center',
     multiLine: true,
     timeout: 2000,
-    color: 'primary',
+    color: 'secondary',
     position: 'center',
   });
 };
