@@ -108,7 +108,7 @@
             horizontal
             class="text-center items-center"
           >
-            <q-card-section class="col-5 q-pa-sm">
+            <q-card-section class="col-5 q-pa-sm text-bold">
               <span>{{ phone.name ?? 'No description' }}</span>
             </q-card-section>
             <q-card-section class="col-5 q-pa-sm">
@@ -140,12 +140,13 @@
 
           <q-separator />
 
-          <q-item class="items-center justify-around text-center">
-            <span class="col-4 text-bold">Birthday</span>
-            <span class="col-8 flex items-center justify-center q-gutter-x-sm">
+          <q-item class="items-center justify-between q-pa-none text-center">
+            <span class="col-5 text-bold">Birthday</span>
+            <span class="col-5">
               {{ contact.birthday ?? 'No birthday stored' }}
+            </span>
+            <span class="col-2">
               <q-btn
-                round
                 color="negative"
                 icon="cake"
                 flat
@@ -158,11 +159,12 @@
 
           <q-separator />
 
-          <q-item class="items-center justify-around text-center">
-            <span class="col-4 text-bold">Email</span>
-            <span class="col-8">
+          <q-item class="items-center justify-between q-pa-none text-center">
+            <span class="col-5 text-bold">Email</span>
+            <span class="col-5">
               {{ contact.email ? contact.email : 'No email stored' }}
             </span>
+            <span class="col-2"></span>
           </q-item>
         </q-card>
       </q-expansion-item>
