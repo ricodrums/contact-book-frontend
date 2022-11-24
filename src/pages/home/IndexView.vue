@@ -142,7 +142,7 @@
 
           <q-item class="items-center justify-around text-center">
             <span class="col-4 text-bold">Birthday</span>
-            <span class="col-8 flex items-center justify-around">
+            <span class="col-8 flex items-center justify-center q-gutter-x-sm">
               {{ contact.birthday ?? 'No birthday stored' }}
               <q-btn
                 round
@@ -350,7 +350,11 @@ const showBirthday = async (contactId: string) => {
   const response = await getBirthday(contactId);
 
   Notify.create({
-    message: `Cumple ${response.age + 1} en ${response.days} dias`,
+    message: `Turns ${response.age + 1} years old, in ${response.days} days.`,
+    multiLine: true,
+    timeout: 2000,
+    color: 'primary',
+    position: 'center',
   });
 };
 
